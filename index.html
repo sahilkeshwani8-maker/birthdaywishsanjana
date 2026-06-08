@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday, sanjana!</title>
+    <style>
+        :root {
+            --primary: #ff758c;
+            --secondary: #ff7eb3;
+            --dark: #2d3748;
+            --light: #fff5f5;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            color: var(--dark);
+        }
+
+        .screen {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+            position: relative;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1, h2 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+
+        button {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            font-size: 1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 1rem;
+            font-weight: bold;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 117, 140, 0.4);
+        }
+
+        /* --- STAGE 1: TIMING --- */
+        .timer-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 2rem 0;
+        }
+        .time-box {
+            background: var(--light);
+            padding: 1rem;
+            border-radius: 10px;
+            width: 70px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .time-box span {
+            display: block;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        /* --- STAGE 2: PASSCODE --- */
+        .pin-display {
+            font-size: 2rem;
+            letter-spacing: 10px;
+            margin-bottom: 1rem;
+            height: 40px;
+            color: var(--primary);
+        }
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            max-width: 250px;
+            margin: 0 auto;
+        }
+        .key {
+            background: var(--light);
+            border: 1px solid #ffe3e3;
+            padding: 15px;
+            font-size: 1.2rem;
+            border-radius: 50%;
+            cursor: pointer;
+            user-select: none;
+            font-weight: bold;
+        }
+        .key:active { background: #ffd1d1; }
+
+        /* --- STAGE 4: CAKE CUTTING --- */
+        .cake-container {
+            position: relative;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            margin-bottom: 2rem;
+        }
+        .cake {
+            width: 150px;
+            height: 100px;
+            background: #f4a261;
+            border-radius: 10px 10px 0 0;
+            position: relative;
+            box-shadow: inset 0 10px 0 #e76f51;
+        }
+        .candle {
+            width: 10px;
+            height: 40px;
+            background: #e9c46a;
+            position: absolute;
+            top: -40px;
+            left: 70px;
+            border-radius: 3px;
+        }
+        .flame {
+            width: 16px;
+            height: 25px;
+            background: #ffb703;
+            border-radius: 50% 50% 20% 20%;
+            position: absolute;
+            top: -22px;
+            left: -3px;
+            animation: flicker 0.1s infinite alternate;
+            cursor: pointer;
+        }
+        @keyframes flicker {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1) rotate(2deg); }
+        }
+        .cake.cut::after {
+            content: '';
+            position: absolute;
+            left: 75px;
+            top: 0;
+            width: 4px;
+            height: 100px;
+            background: rgba(0,0,0,0.1);
+        }
+
+        /* --- STAGE 5: NOTE --- */
+        .note-paper {
+            background: #fff8e7;
+            padding: 2rem;
+            border-left: 5px solid #e9c46a;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.05);
+            text-align: left;
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        /* --- STAGE 6/7: FLIPBOOK ALBUM --- */
+        .album-container {
+            width: 100%;
+            height: 300px;
+            perspective: 1000px;
+            margin: 1.5rem 0;
+        }
+        .flipbook {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+        }
+        .page {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 10px;
+            backface-visibility: hidden;
+            transition: transform 0.6s ease;
+            transform-origin: left center;
+        }
+        .page img {
+            width: 100%;
+            height: 80%;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        .page p {
+            margin-top: 8px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .page.flipped {
+            transform: rotateY(-180deg);
+        }
+
+        /* --- FIREWORKS CONTAINER --- */
+        canvas #canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .audio-control {
+            margin-top: 15px;
+            font-size: 0.8rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Fireworks Canvas Background -->
+    <canvas id="fireworksCanvas" style="position: fixed; top:0; left:0; width:100vw; height:100vh; z-index:0; pointer-events:none;"></canvas>
+
+    <div style="z-index: 1;">
+        <!-- STAGE 1: TIMING PAGE -->
+        <div id="screen1" class="screen active">
+            <h2>The Countdown to Greatness...</h2>
+            <p>Something special is waiting for you, <strong class="sanjana">sanjana</strong>!</p>
+            <div class="timer-container">
+                <div class="time-box"><span id="days">00</span>Days</div>
+                <div class="time-box"><span id="hours">00</span>Hrs</div>
+                <div class="time-box"><span id="minutes">00</span>Min</div>
+                <div class="time-box"><span id="seconds">00</span>Sec</div>
+            </div>
+            <!-- Standard dynamic unlock button for testing purposes -->
+            <button onclick="nextScreen(2)">Unlock Now ✨</button>
+        </div>
+
+        <!-- STAGE 2: PASSCODE PAGE -->
+        <div id="screen2" class="screen">
+            <h2>Secret Passcode</h2>
+            <p>Enter our secret 4-digit code to enter!</p>
+            <p style="font-size: 0.8rem; color:#888; margin-bottom:10px;">(Hint: It's our first dob)</p>
+            <div class="pin-display" id="pinDisplay">****</div>
+            <div class="keypad">
+                <div class="key" onclick="pressKey(1)">1</div>
+                <div class="key" onclick="pressKey(2)">2</div>
+                <div class="key" onclick="pressKey(3)">3</div>
+                <div class="key" onclick="pressKey(4)">4</div>
+                <div class="key" onclick="pressKey(5)">5</div>
+                <div class="key" onclick="pressKey(6)">6</div>
+                <div class="key" onclick="pressKey(7)">7</div>
+                <div class="key" onclick="pressKey(8)">8</div>
+                <div class="key" onclick="pressKey(9)">9</div>
+                <div class="key" style="background:transparent; border:none;"></div>
+                <div class="key" onclick="pressKey(0)">0</div>
+                <div class="key" onclick="clearPin()" style="font-size: 0.9rem; padding: 15px 5px;">CLR</div>
+            </div>
+        </div>
+
+        <!-- STAGE 3: BIRTHDAY WISH -->
+        <div id="screen3" class="screen">
+            <h1>🎉 HAPPY BIRTHDAY, <span class="bestie-name">BESTIE</span>!!! 🎂</h1>
+            <p style="font-size: 1.2rem; margin: 1.5rem 0;">Aaj ke din duniya ne ek masterpiece create kiya tha… thoda overacting wala, thoda drama queen, but phir bhi masterpiece! 🤣!</p>
+            <p>Are you ready to celebrate?</p>
+            <button onclick="nextScreen(4); startMusic();">Yes, let's go! 🥳</button>
+            <div class="audio-control">(This will start sweet background audio)</div>
+        </div>
+
+        <!-- STAGE 4: CAKE CUT -->
+        <div id="screen4" class="screen">
+            <h2>Make a Wish & Blow the Candle!</h2>
+            <p>Click the flame to blow it out, then cut the cake!</p>
+            <div class="cake-container">
+                <div class="cake" id="birthdayCake">
+                    <div class="candle" id="candle"><div class="flame" id="flame" onclick="blowCandle()"></div></div>
+                </div>
+            </div>
+            <button id="cutCakeBtn" onclick="cutCake()" style="display: none;">Cut the Cake 🔪</button>
+            <button id="afterCutBtn" onclick="nextScreen(5)" style="display: none;">Read my Note 📝</button>
+        </div>
+
+        <!-- STAGE 5: NOTE -->
+        <div id="screen5" class="screen">
+            <h2>A Little Note For You... 📋</h2>
+            <div class="note-paper">
+                <p>To my absolute favorite human,</p><br>
+                <p>Happy Birthday meri favorite headache! 💖
+Thanks ki tu meri life ki woh insaan hai jise main bina limit roast kar sakta hoon aur phir bhi apni best friend bula sakta hoon. 😜❤️
+Dua hai tera aaj ka din cake, gifts aur usual se thode kam bakwaas decisions se bhara ho. 🤣🎂
+Khush reh, mast reh, aur thodi si kam irritating banne ki koshish kar… bas thodi si! 😂✨
+
+Happy Birthday Bestie! 🎉💖.</p><br>
+                <p>I hope tumhara din tumhari selfies jitna perfect ho aur tumhare excuses jitne creative gifts mile. May your life be filled with happiness, success, money, and thoda sa common sense bhi… kyunki uski shortage kaafi time se chal rahi hai. 😭😂</p>
+            </div>
+            <button onclick="nextScreen(6)">Look at our memories! 📸</button>
+        </div>
+
+        <!-- STAGE 6 & 7: PHOTOS & FLIPBOOK ALBUM -->
+        <div id="screen6" class="screen">
+            <h2>Our Photo Album 📖</h2>
+            <p>Click the pages to flip through our memories!</p>
+            
+            <div class="album-container">
+                <div class="flipbook" id="album">
+                    <!-- Page 3 (Deepest) -->
+                    <div class="page" style="z-index: 1;">
+                        <img src="https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=500&auto=format&fit=crop" alt="Memory 3">
+                        <p>Cheers to forever! 🥂</p>
+                    </div>
+                    <!-- Page 2 -->
+                    <div class="page" id="page2" style="z-index: 2;" onclick="flipPage('page2')">
+                        <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=500&auto=format&fit=crop" alt="Memory 2">
+                        <p>Crazy adventures together! 🗺️</p>
+                    </div>
+                    <!-- Page 1 (Top) -->
+                    <div class="page" id="page1" style="z-index: 3;" onclick="flipPage('page1')">
+                        <img src=""C:\Users\sahil\OneDrive\Desktop\empmsystem\selfi.jpg.jpeg"" alt="Memory 1">
+                        <p>hamari phli selfi💖</p>
+                    </div>
+                </div>
+            </div>
+            <button onclick="triggerFireworks()">End Celebration with Fireworks! 🎆</button>
+        </div>
+    </div>
+
+    <!-- Background Music Audio (Using an open-source soft instrumental melody) -->
+    <audio id="bgMusic" loop src="https://open.spotify.com/track/6n4LpWn6gFvczitm1QMi3R?si=bbcb07dd1d884cf0"></audio>
+
+    <script>
+        // --- CUSTOMIZATION ---
+        const BESTIE_NAME = "sanjana"; // Change this to your friend's name!
+        const TARGET_PIN = "0110";  // Secret passcode
+
+        // Set Bestie names dynamically
+        document.querySelectorAll('.bestie-name').forEach(el => el.innerText = BESTIE_NAME);
+
+        // --- STAGE NAVIGATION ---
+        function nextScreen(screenNum) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(`screen${screenNum}`).classList.add('active');
+        }
+
+        // --- STAGE 1: COUNTDOWN TIMER ---
+        // Setting a dummy countdown target 2 days from now so it's always working out-of-the-box
+        const targetDate = new Date();
+        targetDate.setDate(targetDate.getDate() + 2); 
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const difference = targetDate - now;
+
+            const d = Math.floor(difference / (1000 * 60 * 60 * 24));
+            const h = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const m = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            const s = Math.floor((difference % (1000 * 60)) / 1000);
+
+            document.getElementById('days').innerText = d < 10 ? '0'+d : d;
+            document.getElementById('hours').innerText = h < 10 ? '0'+h : h;
+            document.getElementById('minutes').innerText = m < 10 ? '0'+m : m;
+            document.getElementById('seconds').innerText = s < 10 ? '0'+s : s;
+        }
+        setInterval(updateCountdown, 1000);
+
+        // --- STAGE 2: PASSCODE PIN SYSTEM ---
+        let enteredPin = "0110";
+        function pressKey(num) {
+            if (enteredPin.length < 4) {
+                enteredPin += num;
+                document.getElementById('pinDisplay').innerText = "*".repeat(enteredPin.length);
+            }
+            if (enteredPin.length === 4) {
+                if (enteredPin === TARGET_PIN) {
+                    setTimeout(() => nextScreen(3), 300);
+                } else {
+                    alert("Wrong passcode! Try again.");
+                    clearPin();
+                }
+            }
+        }
+        function clearPin() {
+            enteredPin = "";
+            document.getElementById('pinDisplay').innerText = "****";
+        }
+
+        // --- BACKGROUND MUSIC ---
+        function startMusic() {
+            const music = document.getElementById('bgMusic');
+            music.volume = 0.4;
+            music.play().catch(e => console.log("Audio play blocked until user gesture interact."));
+        }
+
+        // --- STAGE 4: CAKE & CANDLE INTERACTION ---
+        function blowCandle() {
+            document.getElementById('flame').style.display = 'none';
+            document.getElementById('cutCakeBtn').style.display = 'inline-block';
+        }
+        function cutCake() {
+            document.getElementById('birthdayCake').classList.add('cut');
+            document.getElementById('cutCakeBtn').style.display = 'none';
+            document.getElementById('afterCutBtn').style.display = 'inline-block';
+        }
+
+        // --- STAGE 6: FLIPBOOK ALBUM INTERACTION ---
+        function flipPage(pageId) {
+            document.getElementById(pageId).classList.toggle('flipped');
+        }
+
+        // --- FIREWORKS ENGINE ---
+        const canvas = document.getElementById('fireworksCanvas');
+        const ctx = canvas.getContext('2d');
+        let fireworks = [];
+        let particles = [];
+        let animationId = null;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Firework {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height;
+                this.targetY = Math.random() * (canvas.height / 2);
+                this.speed = 4;
+                this.color = `hsl(${Math.random() * 360}, 100%, 60%)`;
+            }
+            update() {
+                this.y -= this.speed;
+                if (this.y <= this.targetY) {
+                    for (let i = 0; i < 40; i++) {
+                        particles.push(new Particle(this.x, this.y, this.color));
+                    }
+                    return false;
+                }
+                return true;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 4 + 1;
+                this.vx = Math.cos(angle) * speed;
+                this.vy = Math.sin(angle) * speed;
+                this.alpha = 1;
+                this.gravity = 0.05;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vy += this.gravity;
+                this.alpha -= 0.015;
+                return this.alpha > 0;
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function animateFireworks() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            if (Math.random() < 0.05) fireworks.push(new Firework());
+
+            fireworks = fireworks.filter(f => {
+                if (f.update()) { f.draw(); return true; }
+                return false;
+            });
+
+            particles = particles.filter(p => {
+                if (p.update()) { p.draw(); return true; }
+                return false;
+            });
+
+            animationId = requestAnimationFrame(animateFireworks);
+        }
+
+        function triggerFireworks() {
+            alert("Thanks for being my best friend and proving every day ki pagal log bhi successful friendships maintain kar sakte hain. 😂❤️ 🎆🎉");
+            if (!animationId) {
+                animateFireworks();
+            }
+        }
+    </script>
+</body>
+</html>
